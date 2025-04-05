@@ -1,0 +1,26 @@
+@if(isAddingTask()){
+    <app-new-task (createTaskEvent)="onCreateTask($event)" (cancelOutputEvent)="onCancelDialogBox()"/>
+}
+<section id="tasks">
+<header>
+    <h2>{{userName()}}'s Tasks</h2>
+    <menu>
+        <button (click)="onShowTask()">
+            Add Task
+        </button>
+    </menu>
+</header>
+    <p>
+    </p>
+<ul>
+    @if(selectedUserTasks().length > 0){
+        @for (task of selectedUserTasks(); track task.id) {
+            <li>
+                <app-task [task]="task" (complete)="onComplete(userId(),task.id)"/>
+            </li>
+        }
+    }@else{
+        <app-no-task/>
+    }
+</ul>
+</section>

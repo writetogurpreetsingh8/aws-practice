@@ -1,0 +1,14 @@
+#!/bin/bash
+sudo su
+yum update -y
+yum install docker -y
+service docker start
+
+cd /home/ec2-user/
+mkdir java
+cd java
+
+aws s3 cp s3://backend-app-java/ .  --recursive
+
+docker build -t backend-app:latest .
+docker run -d -p 443:8080 backend-app:latest
