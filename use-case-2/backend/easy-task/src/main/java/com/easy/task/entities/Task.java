@@ -1,0 +1,64 @@
+package com.easy.task.entities;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "task_tlb")
+public class Task {
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name="id")
+	private String taskId;
+	
+	@Column(name="title")
+    private String title;
+    
+	@Column(name="summary")
+	private String summary;
+    
+	@Column(name="dueDate")
+	private String dueDate;
+	
+	@Column(name="user_id_fk")
+	private int userId;
+    
+	
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	public String getSummary() {
+		return summary;
+	}
+	public void setSummary(String summary) {
+		this.summary = summary;
+	}
+	public String getDueDate() {
+		return dueDate;
+	}
+	public void setDueDate(String dueDate) {
+		this.dueDate = dueDate;
+	}
+	public int getUserId() {
+		return userId;
+	}
+	public void setUserId(int userId) {
+		this.userId = userId;
+	}
+	public String getTaskId() {
+		return taskId;
+	}
+	public void setTaskId(String taskId) {
+		this.taskId = taskId;
+	}
+	
+	
+}

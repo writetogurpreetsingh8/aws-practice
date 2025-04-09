@@ -1,0 +1,19 @@
+
+# This is a user-data file and will execute at the time of machine startup
+# before apply this script ec2 machine must have role associate with s3 read permission
+# and security-group must allow 9090 port
+
+#!/bin/bash
+sudo su
+yum update -y
+yum install docker -y
+service docker start
+
+cd /home/ec2-user/
+mkdir angular
+cd angular
+
+aws s3 cp s3://web-app-angular001/ .  --recursive
+
+docker build -t web-app:latest .
+docker run -d -p 80:80 web-app:latest
