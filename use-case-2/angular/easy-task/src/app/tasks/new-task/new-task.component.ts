@@ -1,6 +1,5 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TasksService } from '../tasks.service';
 import { NewTask } from '../task/Task.model';
 
 @Component({
@@ -11,8 +10,6 @@ import { NewTask } from '../task/Task.model';
   styleUrl: './new-task.component.css'
 })
 export class NewTaskComponent {
-
-  constructor(private taskService: TasksService){}
 
   enteredTitle = signal('');
   enteredSummary = signal('');

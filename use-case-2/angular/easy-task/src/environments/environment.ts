@@ -1,3 +1,3 @@
 export const environment = {
-    apiUrl: "https://makeitcount.site/api"
+    apiUrl: "http://localhost:8080/api"
 }

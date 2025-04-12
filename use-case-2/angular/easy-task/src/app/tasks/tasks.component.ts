@@ -1,4 +1,4 @@
-import { Component, computed, effect, input, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, input, signal } from '@angular/core';
 import { TaskComponent } from './task/task.component';
 import { NoTaskComponent } from './no-task/no-task.component';
 import { NewTaskComponent } from './new-task/new-task.component';

@@ -12,6 +12,6 @@ import jakarta.transaction.Transactional;
 public interface TaskRepository extends JpaRepository<Task, String> {
 	
 	@Transactional
-	void deleteByTaskIdAndUserId(@Param("taskId") String taskId, @Param("userId") int userId);
+	void deleteByTaskIdAndUserId(@Param("taskId") String taskId, @Param("userId") String userId);
 
 }

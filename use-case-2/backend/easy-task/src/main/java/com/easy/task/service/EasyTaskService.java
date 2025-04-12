@@ -28,14 +28,14 @@ public class EasyTaskService {
 
 	public List<Task> createTask(Task task,String userId){
 		LOGGER.info("EasyTaskService:- invoking createTask() method... with parameter userId {} ",userId);
-		task.setUserId(Integer.parseInt(userId));
+		task.setUserId(userId);
 		taskRepository.save(task);
 		return fetchTask(userId);
 	}
 	
 	public List<Task> fetchTask(String userId){
 		LOGGER.info("EasyTaskService:- invoking getTask() method... with parameter userId {} ",userId);
-		Optional<User> user = userRepository.findById(Integer.parseInt(userId));
+		Optional<User> user = userRepository.findById(userId);
 		if(Objects.isNull(user) || user.isEmpty()){
 			return Collections.emptyList();
 		}else {
@@ -54,7 +54,14 @@ public class EasyTaskService {
 	
 	public List<Task> removeTask(String taskId, String userId){
 		LOGGER.info("EasyTaskService:- invoking removeTask() method... with parameter userId {} and taskId {} ",userId, taskId);
-		taskRepository.deleteByTaskIdAndUserId(taskId, Integer.parseInt(userId));
+		taskRepository.deleteByTaskIdAndUserId(taskId, userId);
 		return fetchTask(userId);
+	}
+	
+	public List<User> addUser(String userName) {
+		User user = new User();
+		user.setUserName(userName);
+		userRepository.save(user);
+		return fetchUsers();
 	}
 }

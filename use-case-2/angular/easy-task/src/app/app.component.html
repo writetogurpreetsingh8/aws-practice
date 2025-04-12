@@ -20,8 +20,16 @@
 
 <main>
   <ul id="users">
-    
-      <li *ngFor="let user of users">
+    <div class="flex flex-col items-start space-y-3">
+      <!-- Add User Button -->
+      @if(isNewUserAdded()){ 
+        <app-new-user (cancelDialogBoxEvent)="onCancel()" (newUserDataEvent)="onAddNewUser($event)"></app-new-user>
+      }
+      <button class="add-user-btn" (click)="onAddUser()">
+        + Add User
+      </button>
+      </div>
+      <li *ngFor="let user of users()">
         <app-user [user]="user" [selected]="selectedUserSignal() === user.userId" (select)="onSelectUser($event)"></app-user>
       </li>
     

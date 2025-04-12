@@ -26,7 +26,7 @@ public class Task {
 	private String dueDate;
 	
 	@Column(name="user_id_fk")
-	private int userId;
+	private String userId;
     
 	
 	public String getTitle() {
@@ -47,10 +47,11 @@ public class Task {
 	public void setDueDate(String dueDate) {
 		this.dueDate = dueDate;
 	}
-	public int getUserId() {
+	
+	public String getUserId() {
 		return userId;
 	}
-	public void setUserId(int userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 	public String getTaskId() {

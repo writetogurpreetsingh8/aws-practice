@@ -1,6 +1,9 @@
 package com.easy.task.resource;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.easy.task.entities.Task;
 import com.easy.task.entities.User;
@@ -50,4 +54,14 @@ public class Resource {
 	public ResponseEntity<List<User>> getUsers(){
 		return ResponseEntity.ok().body(easyTaskService.fetchUsers());
 	}
+	
+	@PostMapping("/user")
+    public ResponseEntity<List<User>> handleUpload(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("userName") String userName) {
+
+        System.out.println("File name: " + file.getOriginalFilename());
+        System.out.println("userName: " + userName);
+        return ResponseEntity.ok().body(easyTaskService.addUser(userName));
+    }
 }
