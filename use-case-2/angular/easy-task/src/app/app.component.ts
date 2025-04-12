@@ -39,7 +39,6 @@ export class AppComponent implements OnInit{
   }
 
   computeUser = computed(() => {
-    alert('this.selectedUserSignal() '+this.selectedUserSignal());
     return this.userService.usersData.find(user => user.userId === this.selectedUserSignal())!
   });
 

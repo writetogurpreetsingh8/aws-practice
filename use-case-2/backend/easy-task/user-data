@@ -1,14 +1,33 @@
 #!/bin/bash
-sudo su
-yum update -y
-yum install docker -y
-service docker start
+
+# Log everything
+exec > /var/log/user-data.log 2>&1
+
+echo "updating system!"
+
+sudo yum update -y
+
+echo "installing docker!"
+
+sudo yum install -y docker
+
+sudo systemctl enable docker
+
+sudo systemctl start docker
+
+# Add ec2-user to docker group
+echo "add ec2-user to docker group"
+usermod -aG docker ec2-user
 
 cd /home/ec2-user/
-mkdir java
-cd java
+mkdir -p java && cd java
 
+echo "fetching backend code from s3..."
 aws s3 cp s3://backend-app-java/ .  --recursive
 
+echo "building image from dockerfile..."
 docker build -t backend-app:latest .
+
+echo "exeuting docker image to make docker process"
+
 docker run -d -p 80:8080 backend-app:latest
