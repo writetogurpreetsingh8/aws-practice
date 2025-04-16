@@ -1,0 +1,13 @@
+<app-card-ui>
+<article>
+    <h2>{{task().title}}</h2>
+    <time>{{task().dueDate}}</time>
+    <p>{{task().summary}}</p>
+    @if(task().docName){
+        <a href="/api/{{task().taskId}}/{{task().userId}}" download class="download-btn">📎 {{task().docName}}</a>
+    }
+    <p class="actions">
+        <button (click)="onComplete()">Complete</button>
+    </p>
+</article>
+</app-card-ui>

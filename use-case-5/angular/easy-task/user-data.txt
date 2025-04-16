@@ -1,0 +1,37 @@
+
+# This is a user-data file and will execute at the time of machine startup
+# before apply this script ec2 machine must have role associate with s3 read permission
+# and security-group must allow 9090 port
+
+#!/bin/bash
+
+# Log everything
+exec > /var/log/user-data.log 2>&1
+
+echo "updating system!"
+
+sudo yum update -y
+
+echo "installing docker!"
+
+sudo yum install -y docker
+sudo systemctl enable docker
+sudo systemctl start docker
+
+# Add ec2-user to docker group
+echo "add ec2-user to docker group"
+usermod -aG docker ec2-user
+
+cd /home/ec2-user/
+mkdir -p angular && cd angular
+
+echo "fetching backend code from s3..."
+
+aws s3 cp s3://web-app-angular001/ .  --recursive
+
+echo "building image from dockerfile..."
+
+docker build -t web-app:latest .
+echo "exeuting docker image to make docker process"
+
+docker run -d -p 80:80 web-app:latest
