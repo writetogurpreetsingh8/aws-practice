@@ -1,0 +1,35 @@
+#!/bin/bash
+
+echo "updating system!"
+
+sudo yum update -y
+
+echo "Docker, Already available in AMI!"
+
+sudo systemctl enable docker
+
+sudo systemctl start docker
+
+# Add ec2-user to docker group
+echo "add ec2-user to docker group"
+usermod -aG docker ec2-user
+
+cd /home/ec2-user/
+mkdir efs
+
+#Change ownership to your app user
+sudo chown ec2-user:ec2-user efs
+
+sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport fs-0b8ac0755591e294a.efs.us-east-1.amazonaws.com:/ efs
+
+mkdir -p java && cd java
+
+echo "fetching backend code from s3..."
+aws s3 cp s3://backend-app-java/ .  --recursive
+
+echo "building image from dockerfile..."
+sudo docker build -t backend-app:latest .
+
+echo "exeuting docker image to make docker process"
+
+sudo docker run -d -v /home/ec2-user/efs:/usr/apps/efs -p 80:8080 backend-app:latest

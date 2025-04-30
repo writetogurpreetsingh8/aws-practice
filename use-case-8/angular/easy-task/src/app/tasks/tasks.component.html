@@ -1,0 +1,34 @@
+@if(isAddingTask()){
+    <app-new-task (createTaskEvent)="onCreateTask($event)" (cancelOutputEvent)="onCancelDialogBox()"/>
+}
+<section id="tasks">
+<header class="task-header">
+    <div class="task-header-left">
+    <h2>{{userName()}}'s Tasks</h2>
+    </div>
+    <div class="task-header-right">
+        <div class="badge-with-text">
+            <span class="task-badge">{{ noOfScheduleTasks() }}</span>
+            <span class="badge-text">Scheduled Tasks</span>
+        </div>
+    <menu>
+        <button (click)="onShowTask()">
+            Add Task
+        </button>
+    </menu>
+    </div>
+</header>
+    <p>
+    </p>
+<ul>
+    @if(selectedUserTasks().length > 0){
+        @for (task of selectedUserTasks(); track task.taskId) {
+            <li>
+                <app-task [task]="task" (complete)="onComplete(userId(),task.taskId)"/>
+            </li>
+        }
+    }@else{
+        <app-no-task/>
+    }
+</ul>
+</section>

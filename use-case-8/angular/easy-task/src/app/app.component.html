@@ -1,0 +1,45 @@
+<app-loader></app-loader>
+<app-header></app-header>
+
+<!-- <main>
+  <ul id="users">
+    @for(user of users; track user.id){
+      <li>
+        <app-user [user]="user" (select)="onSelectUser($event)"></app-user>
+      </li>
+    }
+  </ul>
+
+  @if (name) {
+    <app-tasks [userName]="name.name"/>
+  }
+  @else {
+    <p id="fallback">Select the user to see their tasks!</p>
+  }
+</main> -->
+
+<main>
+  <div class="scroll-container">
+  <ul id="users">
+    <div class="flex flex-col items-start space-y-3">
+      <!-- Add User Button -->
+      @if(isNewUserAdded()){ 
+        <app-new-user (cancelDialogBoxEvent)="onCancel()" (newUserDataEvent)="onAddNewUser($event)"></app-new-user>
+      }
+      <button class="add-user-btn" (click)="onAddUser()">
+        + Add User
+      </button>
+      </div>
+      <li *ngFor="let user of users()">
+        <app-user [user]="user" [selected]="selectedUserSignal() === user.userId" (select)="onSelectUser($event)"></app-user>
+      </li>
+    
+  </ul>
+</div>
+
+    <app-tasks *ngIf="computeUser() as user1; else fallback" [userId]="user1.userId" [userName]="user1.userName"/>
+  
+    <ng-template #fallback>
+    <p id="fallback">Select the user to see their tasks!</p>
+  </ng-template> 
+</main>
