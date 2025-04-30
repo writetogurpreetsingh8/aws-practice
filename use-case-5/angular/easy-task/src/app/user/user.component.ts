@@ -22,6 +22,6 @@ export class UserComponent {
   }
 
   get imagePath(){
-    return "assets/users/"+this.user.userAvatar;
+    return this.user.avatarFullPath;
   }
 }

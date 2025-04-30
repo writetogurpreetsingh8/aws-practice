@@ -6,6 +6,7 @@ RUN mvn clean install
 
 FROM eclipse-temurin:21-jre-alpine
 COPY --from=builder /usr/apps/target/app.jar /usr/apps/
+RUN mkdir -p /usr/apps/efs
 EXPOSE 8080
 
-CMD ["java", "-jar", "/usr/apps/app.jar"]
+CMD ["java", "-Djava.io.tmpdir=/usr/apps/efs", "-jar", "/usr/apps/app.jar"]

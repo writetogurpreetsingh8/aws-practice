@@ -19,6 +19,7 @@
 </main> -->
 
 <main>
+  <div class="scroll-container">
   <ul id="users">
     <div class="flex flex-col items-start space-y-3">
       <!-- Add User Button -->
@@ -34,6 +35,7 @@
       </li>
     
   </ul>
+</div>
 
     <app-tasks *ngIf="computeUser() as user1; else fallback" [userId]="user1.userId" [userName]="user1.userName"/>
   

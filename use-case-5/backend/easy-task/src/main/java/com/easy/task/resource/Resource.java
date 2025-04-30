@@ -35,7 +35,7 @@ public class Resource {
 	@Autowired
 	private EasyTaskService easyTaskService;
 	
-	@PostMapping("/task")
+	@PostMapping(value="/task", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<List<Task>> createTask(@RequestPart(value = "file",required = false) MultipartFile file,
 			@RequestPart("task") Task task, @RequestPart("userId") String userId) throws IOException {
 		LOGGER.info("UserResource:- invoking task() method...");
@@ -60,11 +60,11 @@ public class Resource {
 	@PostMapping("/user")
     public ResponseEntity<List<User>> handleUpload(
             @RequestParam("file") MultipartFile file,
-            @RequestParam("userName") String userName) {
+            @RequestParam("userName") String userName) throws Exception {
 
         System.out.println("File name: " + file.getOriginalFilename());
         System.out.println("userName: " + userName);
-        return ResponseEntity.ok().body(easyTaskService.addUser(userName));
+        return ResponseEntity.ok().body(easyTaskService.addUser(userName, file));
     }
 	
 	@GetMapping("/{taskId}/{userId}")

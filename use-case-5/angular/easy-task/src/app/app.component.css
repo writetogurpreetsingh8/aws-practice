@@ -89,3 +89,9 @@ main {
   background-color: #a855f7;
   font-weight: bold;
 }
+.scroll-container {
+  height: 500px;
+  overflow-y: auto;
+  border: 1px solid gray;
+  padding: 10px;
+}

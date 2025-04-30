@@ -38,6 +38,9 @@ public class EasyTaskService {
 	
 	@Autowired
 	private TaskRepository taskRepository;
+	
+	@Autowired
+	private S3Service s3Service;
 
 	public List<Task> createTask(MultipartFile file ,Task task,String userId) throws IOException{
 		LOGGER.info("EasyTaskService:- invoking createTask() method... with parameter userId {} ",userId);
@@ -49,7 +52,7 @@ public class EasyTaskService {
 			taskRepository.save(task);
 			return fetchTask(userId);
 		} catch (IOException e) {
-			LOGGER.error("error {} occurred while saving task document for user: {} ",e, userId);
+			LOGGER.error("ERROR: {} occurred while saving task document for user: {} ",e, userId);
 			throw e;
 			
 		}
@@ -69,7 +72,7 @@ public class EasyTaskService {
 		}
 		
 		Path finalFile = dir.resolve(file.getOriginalFilename());
-		Files.copy(file.getInputStream(), finalFile,StandardCopyOption.REPLACE_EXISTING);
+		Files.copy(file.getInputStream(), finalFile ,StandardCopyOption.REPLACE_EXISTING);
 		task.setDocFullPath(finalFile.toString());
 		task.setDocName(file.getOriginalFilename());
 	}
@@ -110,9 +113,18 @@ public class EasyTaskService {
 		}
 	}
 
-	public List<User> addUser(String userName) {
+	public List<User> addUser(String userName, MultipartFile file) throws Exception  {
 		User user = new User();
 		user.setUserName(userName);
+		user = userRepository.saveAndFlush(user);
+		try {
+			String endpoint = s3Service.uploadUserAvatarToS3Bucket(file,user.getUserId());
+			user.setAvatarFullPath(endpoint);
+		}
+		catch(Exception e) {
+			LOGGER.error("ERROR: {} occurred while uploading user avator to S3 bucket", e);
+			throw e;
+		}
 		userRepository.save(user);
 		return fetchUsers();
 	}
@@ -124,12 +136,12 @@ public class EasyTaskService {
 		try {
 			UrlResource res = new FileUrlResource(path.toString());
 			if(!res.exists()) {
-				LOGGER.error("error occured while downloading task file: {} ",task.getDocName());
+				LOGGER.error("ERROR: occured while downloading task file: {} ",task.getDocName());
 				throw new FileNotFoundException("File "+task.getDocName()+ "not found");
 			}
 			return res;
 		} catch (MalformedURLException e) {
-			LOGGER.error("error {} occurred while downloading task file: {} ",e, task.getDocName());
+			LOGGER.error("ERROR: {} occurred while downloading task file: {} ",e, task.getDocName());
 			throw e;
 		}
 	}
