@@ -1,11 +1,14 @@
 package aws.lamda;
 
-public class DBProperties {
+public class SecretProperties {
 
 	private String url;
 	private String userName;
 	private String pwd;
 	private String dbName;
+	private String sqsUrl;
+	private String snsTopic;
+	
 	public String getUrl() {
 		return url;
 	}
@@ -30,6 +33,16 @@ public class DBProperties {
 	public void setDbName(String dbName) {
 		this.dbName = dbName;
 	}
-	
-	
+	public String getSqsUrl() {
+		return sqsUrl;
+	}
+	public void setSqsUrl(String sqsUrl) {
+		this.sqsUrl = sqsUrl;
+	}
+	public String getSnsTopic() {
+		return snsTopic;
+	}
+	public void setSnsTopic(String snsTopic) {
+		this.snsTopic = snsTopic;
+	}
 }

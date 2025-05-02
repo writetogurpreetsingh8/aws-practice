@@ -7,6 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
@@ -22,10 +25,11 @@ import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
 
-public class EasyTaskSchedulerLambda implements RequestHandler<Void, LambdaResponse> {
+public class EasyTaskReadRDSLambda implements RequestHandler<Void, LambdaResponse> {
 
 
 	LambdaLogger logger = null;
+	Gson gson = new GsonBuilder().setPrettyPrinting().create();
 	
 	@Override
 	public LambdaResponse handleRequest(Void input, Context context) {
@@ -35,7 +39,7 @@ public class EasyTaskSchedulerLambda implements RequestHandler<Void, LambdaRespo
 		
 		List<String> ids = new ArrayList<>();
 		logger.log("retrieving secrets from SecretsManager for db");
-		DBProperties db = retrieveDBSecretsFromSecretsManager();
+		SecretProperties secret = retrieveDBSecretsFromSecretsManager();
 		LambdaResponse lambdaResponse = new LambdaResponse();
 		
 		 try {
@@ -49,10 +53,10 @@ public class EasyTaskSchedulerLambda implements RequestHandler<Void, LambdaRespo
 	            return lambdaResponse;
 	        }
 		 
-		 logger.log("making database connection for the given url "+db.getUrl());
+		 logger.log("making database connection for the given url "+secret.getUrl());
 		 
-		 try (Connection connection = DriverManager.getConnection(db.getUrl(), db.getUserName(), db.getPwd());
-	             PreparedStatement statement = connection.prepareStatement("SELECT id FROM task_tlb WHERE is_schedule = TRUE AND STATUS = 'schedule' AND DATE_FORMAT(due_date, '%Y-%m-%d %H:%i') <= DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i')");
+		 try (Connection connection = DriverManager.getConnection(secret.getUrl(), secret.getUserName(), secret.getPwd());
+	             PreparedStatement statement = connection.prepareStatement("SELECT id FROM task_tlb WHERE is_schedule = true and status='schedule' and STR_TO_DATE(due_date, '%d-%m-%Y %H:%i') <= NOW()");
 	             ResultSet resultSet = statement.executeQuery()) {
 
 	            while (resultSet.next()) {
@@ -63,7 +67,9 @@ public class EasyTaskSchedulerLambda implements RequestHandler<Void, LambdaRespo
 	            lambdaResponse.setResponseCode(200);
 	            lambdaResponse.setResponseMessage("Success");
 	            logger.log("Success");
-	            sendDataToSQS(ids);
+	            if(Objects.nonNull(ids) && !ids.isEmpty()) {
+	            	sendDataToSQS(ids,secret.getSqsUrl());
+	            }
 	        } 
 		 	catch (SQLException e) {
 	        	 logger.log("ERROR occurred while fetching data from database");
@@ -74,9 +80,8 @@ public class EasyTaskSchedulerLambda implements RequestHandler<Void, LambdaRespo
 	        }
 		return lambdaResponse;
 	}
-	
-	private void sendDataToSQS(List<String> data) {
-		final String QUEUE_URL = "https://sqs.us-east-1.amazonaws.com/your-account-id/your-queue-name";
+
+	private void sendDataToSQS(List<String> data, String sqsUrl) {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	    final SqsClient sqsClient = SqsClient.builder()
@@ -84,18 +89,17 @@ public class EasyTaskSchedulerLambda implements RequestHandler<Void, LambdaRespo
 	            .build();
 
 	        SendMessageRequest sendMsgRequest = SendMessageRequest.builder()
-	                .queueUrl(QUEUE_URL)
+	                .queueUrl(sqsUrl)
 	                .messageBody(gson.toJson(data))
+	                .messageGroupId("Lambda-DB-Fetch")
+	                .messageDeduplicationId(UUID.randomUUID().toString())
 	                .build();
-
 	        logger.log("sending data to SQS "+gson.toJson(data));
 	        SendMessageResponse sendMsgResponse = sqsClient.sendMessage(sendMsgRequest);
-
 	        logger.log("data successfully sent to SQS, Message ID: " + sendMsgResponse.messageId());
-	
 	}
 	
-	private DBProperties retrieveDBSecretsFromSecretsManager() {
+	private SecretProperties retrieveDBSecretsFromSecretsManager() {
 		 
 		String secretName = "keys";
 		 Region region = Region.of("us-east-1");
@@ -114,15 +118,29 @@ public class EasyTaskSchedulerLambda implements RequestHandler<Void, LambdaRespo
 		    try {
 		        getSecretValueResponse = client.getSecretValue(getSecretValueRequest);
 		    } catch (Exception e) {
-		        // For a list of exceptions thrown, see
-		        // https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
 		        throw e;
 		    }
 
 		    String secret = getSecretValueResponse.secretString();
+		    logger.log("secret "+secret);
+		    Map<String,String> secretMap = gson.fromJson(secret, Map.class);
+	        String dbUser = secretMap.get("db_user");
+	        String dbUrl = secretMap.get("db_url");
+	        String dbPwd = secretMap.get("db_pwd");
+	        String sqsUrl = secretMap.get("sqs.fifo_url");
 
+	        logger.log("dbUser: " + dbUser);
+	        logger.log("dbUrl: " + dbUrl);
+	        logger.log("sqsUrl: " + sqsUrl);
+		    
+		  
+	        SecretProperties properties = new SecretProperties();
+	        properties.setUserName(dbUser);
+	        properties.setPwd(dbPwd);
+	        properties.setUrl(dbUrl);
+	        properties.setSqsUrl(sqsUrl);
 		    // Your code goes here.
-		   return new DBProperties();
+		   return properties;
 	}
 
 }
