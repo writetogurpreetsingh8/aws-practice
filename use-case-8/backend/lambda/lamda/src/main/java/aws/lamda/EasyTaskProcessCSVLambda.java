@@ -32,6 +32,10 @@ import software.amazon.awssdk.services.sns.SnsClient;
 import software.amazon.awssdk.services.sns.model.PublishRequest;
 import software.amazon.awssdk.services.sns.model.PublishResponse;
 
+/**
+ * This Lambda is responsible to receive S3 Event that hold the uploaded CSV file information
+ * read the CSV file store it into database and send Notification
+ */
 public class EasyTaskProcessCSVLambda implements RequestHandler<S3Event, LambdaResponse> {
 
 

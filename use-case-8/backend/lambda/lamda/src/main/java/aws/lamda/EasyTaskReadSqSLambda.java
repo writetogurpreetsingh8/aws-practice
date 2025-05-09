@@ -20,6 +20,9 @@ import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse;
 
+/**
+ * This lambda receive event from SQS
+ */
 public class EasyTaskReadSqSLambda implements RequestHandler<SQSEvent, LambdaResponse> {
 
 
@@ -49,7 +52,7 @@ public class EasyTaskReadSqSLambda implements RequestHandler<SQSEvent, LambdaRes
 			return lambdaResponse;
 		}
 		
-		List<String> list = gson.fromJson(input.getRecords().get(0).getBody(),List.class);
+		List<String> list = gson.fromJson(input.getRecords().get(0).getBody(), List.class);
 		logger.log("list is "+list);
 		
 		 try {

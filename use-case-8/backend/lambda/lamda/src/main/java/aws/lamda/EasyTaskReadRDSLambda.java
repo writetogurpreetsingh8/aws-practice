@@ -25,6 +25,10 @@ import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
 
+/**
+ * This lambda is responsible to retrieve data from database
+ * and send it to SQS
+ */
 public class EasyTaskReadRDSLambda implements RequestHandler<Void, LambdaResponse> {
 
 
