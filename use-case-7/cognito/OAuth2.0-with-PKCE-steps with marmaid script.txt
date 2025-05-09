@@ -1,0 +1,37 @@
+Below are the OAuth2.0 with PKCE flow
+
+1) Resource owner request to Client application
+2) Client application request to Auth Server /oauth2/authorize (with response_type=code, client_id, state, code_challenge,scope and redirect_url parameters) redirect to congnito hosted UI)
+3) Auth Server redirect to Resource owner
+4) Resource owner enter he/her credentials and request goes to Auth Server
+5) If Resource owner authenticated successfully Auth Server redirect to Client app by its callback url with auth code, state value
+6) Now before getting access_token Client app check for state value whether it matching with the previous state which has passed in the prevous request to Auth server or not if it does not match than Client app reject the request.
+7) if state value gets matched than Client app request to Auth Server by invoking its /OAuth2/token url with grant_type=authorization_code,
+code_verifier, code , redirect_url and client_id
+8) Auth Server return response to Client app with Id, access and refresh token
+9) Client App calls/invoke the Resource Server to access its resource with access_toke (JWT)
+
+
+Mermaid script
+
+sequenceDiagram
+    participant User as Resource Owner
+    participant Client as Client Application
+    participant Auth as Auth Server (Cognito)
+    participant RS as Resource Server
+
+    User->>Client: 1. Request access
+    Client->>Auth: 2. Redirect to /oauth2/authorize (response_type=code, client_id, state, code_challenge, etc.)
+    Auth-->>User: 3. Redirect to Cognito Hosted UI
+    User->>Auth: 4. Submit credentials
+    Auth-->>Client: 5. Redirect to callback with code + state
+    Client->>Client: 6. Validate state (matches previous one?)
+    alt State mismatch
+        Client-->>User: Reject request (possible CSRF attack)
+    else State matches
+        Client->>Auth: 7. POST /oauth2/token (grant_type=authorization_code, code, verifier, redirect_uri, client_id)
+        Auth-->>Client: 8. Return id_token, access_token, refresh_token
+        Client->>RS: 9. Call API with access_token (JWT)
+        RS-->>Client: Return protected resource
+    end
+

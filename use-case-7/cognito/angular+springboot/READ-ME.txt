@@ -1,0 +1,18 @@
+Project Overview:
+
+This demo consists of two separate applications:
+
+1) Frontend: Built with Angular
+2) Backend: Built with Spring Boot
+
+Key Features:
+
+A) Implements Sign In, Sign Up, and Token Refresh functionality.
+B) Uses OAuth 2.0 with PKCE flow, with AWS Cognito as the Identity Provider.
+C) All authentication logic (Sign In, Sign Up, redirection handling) is managed by the backend.
+D) Upon successful login, the frontend receives id_token, access_token, and refresh_token. It includes the access_token as a Bearer token in the Authorization header for subsequent API calls.
+E) The backend is configured as an oauth2ResourceServer, which automatically extracts and validates the Bearer token to authenticate the user.
+F) If the access_token expires, the backend responds with a 401 Unauthorized error. The frontend intercepts this, triggers a refresh by calling the /oauth2/token endpoint, obtains a new access_token and retries the original request.
+
+For further details, refer to the project code & flow image.
+

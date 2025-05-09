@@ -1,0 +1,9 @@
+{
+    "/oauth2": {
+      "target": "https://us-east-1qmldkndwa.auth.us-east-1.amazoncognito.com",
+      "secure": false,
+      "changeOrigin": false,
+      "logLevel": "debug"
+    }
+  }
+  

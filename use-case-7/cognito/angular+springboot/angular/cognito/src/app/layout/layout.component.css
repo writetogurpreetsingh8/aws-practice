@@ -1,0 +1,8 @@
+.token-container {
+    white-space: pre-wrap; /* Wrap long strings */
+    word-break: break-all; /* Break tokens at arbitrary points if needed */
+    overflow-wrap: break-word;
+    max-width: 100%;
+    overflow-x: auto; /* Optional: Add horizontal scroll if absolutely needed */
+    font-family: monospace; /* Makes tokens more readable */
+  }

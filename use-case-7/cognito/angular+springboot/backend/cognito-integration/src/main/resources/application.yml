@@ -1,0 +1,30 @@
+cognito: {
+     domain: https://us-east-1cchscpcei.auth.us-east-1.amazoncognito.com,
+     clientId: n5ldu82h0qhp54cldp1hvlc1c,
+     callbackUri: http://localhost:8080/auth/callback,
+     userPoolId: us-east-1_CCHScpCEi, 
+     region: us-east-1,
+     redirectUrl: http://localhost:4200,
+     logoutUrl: https://us-east-1cchscpcei.auth.us-east-1.amazoncognito.com/logout,
+     logoutRedirectUrl: http://localhost:4200/logout}
+     
+spring: 
+   application:
+       name: cognito-integration
+   security:
+    session:
+      create-session: never
+      #below configuraton does following works
+      #Automatically extract and validate the JWT from the Authorization: Bearer ... header
+      #Decode it using the JWKS URI derived from the issuer
+    oauth2:
+      resourceserver:
+         jwt:
+           issuer-uri: https://cognito-idp.us-east-1.amazonaws.com/us-east-1_CCHScpCEi
+           
+server:
+  servlet:
+    session:
+      cookie:
+        secure: true     # only send cookies over HTTPS
+        http-only: false
