@@ -1,0 +1,7 @@
+<ng-container *ngIf="authCheckComplete; else loading">
+  <router-outlet></router-outlet>
+</ng-container>
+
+<ng-template #loading>
+  <div class="loader">Loading...</div>
+</ng-template>

@@ -1,0 +1,14 @@
+spring: 
+   application:
+       name: signup-sign-in-signout-demo
+   security:
+    session:
+      create-session: never
+      #below configuraton does following works
+      #Automatically extract and validate the JWT from the Authorization: Bearer ... header
+      #Decode it using the JWKS URI derived from the issuer
+    oauth2:
+      resourceserver:
+         jwt:
+           jws-algorithms: RS256
+           issuer-uri: https://cognito-idp.us-east-1.amazonaws.com/us-east-1_lJsfW43JF

@@ -1,0 +1,19 @@
+How to integrate Cognito with Google As a Identity Provider
+
+https://awskarthik82.medium.com/how-to-integrate-aws-cognito-with-google-social-login-fd379ff644cc
+
+https://www.youtube.com/watch?v=7r0eBNBNEZ8
+
+
+Used below url to make app client on google platform
+
+https://console.cloud.google.com/auth
+
+when we create app client on google platform
+The Application type must be "Web application" in case of Web-application and SPA
+
+when we add the client id and client secret of google into AWS Cognito
+In the Authorized scopes we need to atlest pass below attributes
+openid email profile
+
+There is list available of google scope attributes available on internet, that we can ask/get from google
