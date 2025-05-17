@@ -25,13 +25,13 @@
 			<artifactId>spring-boot-starter-oauth2-client</artifactId> 
 		 </dependency>
 		
-		<!-- <dependency>
-			Brings Full AWS Cognito Identity Provider SDK: user-pool management, admin API calls, forgot/password, SRP, etc
+		 <dependency>
+			<!-- Brings Full AWS Cognito Identity Provider SDK: user-pool management, admin API calls, forgot/password, SRP, etc -->
     		<groupId>software.amazon.awssdk</groupId>
    			 <artifactId>cognitoidentityprovider</artifactId> 
    			 <version>2.31.35</version>
-		</dependency>
-		-->
+		</dependency> 
+		
 		
 		<dependency>
 			<!-- Brings Low-level JWT parsing & creation. -->

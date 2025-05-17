@@ -6,10 +6,10 @@ import { AuthModule } from 'angular-auth-oidc-client';
     imports: [AuthModule.forRoot({
         config: {
               authority: 'https://cognito-idp.us-east-1.amazonaws.com/us-east-1_lJsfW43JF',
-              redirectUrl: 'http://localhost:4200/',
-              postLogoutRedirectUri: 'http://localhost:4200/',
-              clientId: '4go87kqlajnf047fke8emiofd5',
-              scope: 'email openid phone', // 'openid profile offline_access ' + your scopes
+              redirectUrl: 'http://localhost:4300/',
+              postLogoutRedirectUri: 'http://localhost:4300/',
+              clientId: '7du81oomrm3u0b5dmtc8u6c5dt',
+              scope: 'email openid phone aws.cognito.signin.user.admin', // 'openid profile offline_access ' + your scopes
               responseType: 'code',
               silentRenew: true,
               useRefreshToken: true,

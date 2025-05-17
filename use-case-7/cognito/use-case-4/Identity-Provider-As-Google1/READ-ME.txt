@@ -17,3 +17,88 @@ In the Authorized scopes we need to atlest pass below attributes
 openid email profile
 
 There is list available of google scope attributes available on internet, that we can ask/get from google
+
+AWS Cognitio Logout Bug in case of Third-Party IDP or it works as it is by design?
+https://repost.aws/questions/QUf0v2ubkMTq-r8061JSrM0w/aws-cognitio-logout-bug
+
+https://<cognito-domain>/logout?client_id=<client-id>&logout_uri=<logout-uri>
+
+There is some issue while logging out in case of third-party IDP (except Cognitio)
+
+When we try to logged-out from application it only make you logged-out on Cognitio domain not
+on Google domain below are the reason:-
+
+1) Cognito’s /logout url will clear only its own cognito.sid cookie on the *.auth.<region>.amazoncognito.com domain
+   but it can't logged-out on google domain Since Google Workspace ignores SLO(Single Sign Out), 
+   its session cookie stays valid on Cognito Domain, So /authorize or /login just reuses that existing Google session.
+   
+2) Cognito’s /logout never clears OIDC/social IdP cookies—you must explicitly call the external provider’s logout endpoint. 
+	That's why after logged-out on the application whenever user again loads the home url like http://localhost:4200/
+	the oidc-client library internally calls the cognito and on cognito domain there is already a active session of the same user so it will never ask to login again even after logged-in its called silent-login 
+	
+So in order to make proper logged-out on both the platform need to follow below steps:-
+1)  Step 1: Clear the Cognito session cookie by redirecting to
+	https://<your-domain>.auth.<region>.amazoncognito.com/logout?client_id=<client_id>&logout_uri=<your-logout-callback> 	
+	
+2) Step 2: Immediately redirect to the external IdP’s logout—for Google:-
+	https://accounts.google.com/logout
+
+After all these two steps, both Cognito and Google sessions are ended. The next /login will truly prompt for credentials
+
+But there is still one problem with above approach , the problem is in step number 2) where we are invoking
+this url https://accounts.google.com/logout this will logout from all the google services but on the same browser on which we have initiated logout So if we invoke this url than we will have to login on the google and google services again 
+this is the default behaviour of SSO 
+
+===============================================================================================================================
+So there is no way to log-out unless we fully logged out from google to that's why SSO works
+
+1) You are logging out of your app (clear local/sessionStorage).
+2) You are logging out of Cognito Hosted UI (/logout clears cognito.sid).
+3) BUT the Google.com SSO cookie still exists in our browser which is httponly Js can't access it
+   So when you click “Sign in” again, your app redirects to Cognito’s Hosted UI → Cognito sees no session, so it redirects to Google → Google sees you’re still signed in (cookie) → silently logs you in and gives a code back to Cognito.
+
+Result: silent re-login.
+
+How it actually happens:-
+
+1) User clicks “Sign In” in your app.
+		→ Your app sends the request to Cognito
+
+2) Browser sends this request to Cognito Hosted UI.
+	→ Cognito checks:- 
+			“Do I (Cognito) have a valid cognito.sid session cookie for this user?”
+			If yes, than return to app from here only with access,id and refresh tokens.
+			If no, than Cognito prepares the Google login URL for you.
+			
+3) Cognito builds a redirect URL to Google’s authorization endpoint:-
+			https://accounts.google.com/o/oauth2/v2/auth?client_id=... &redirect_uri=https%3A%2F%2F<your-cognito-domain>%2Foauth2%2Fidpresponse
+			&scope=openid%20profile%20email
+			&response_type=code
+			&prompt=select_account
+			
+	->	Cognito sends this redirect response back to your browser.
+	-> 	The browser’s address bar now navigates to accounts.google.com.
+	
+4) 	Browser sends the Google session cookies automatically.
+	
+	Any cookies scoped to google.com or accounts.google.com are sent.
+	These include authentication cookies like SID, HSID, etc.		
+	This happens automatically by the browser — you don’t control it, Cognito doesn’t control it.
+	
+5) 	Google processes the request:-
+	
+	If Google sees a valid session cookie → it silently authenticates.
+	If no valid cookie → Google shows you the login form.
+	
+6)	Google redirects back to Cognito with the Authorization Code
+	
+	Cognito now has Authorization code of google
+	
+7)	Cognito exchanges the auth code with google again to get the google tokens.
+	
+	Then Cognito redirects back to your app’s original callback_url with the tokens.
+	
+END OF Flow
+	
+
+

@@ -23,7 +23,7 @@ public class SecurityConfig {
 	        	.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 	            
 	        	.authorizeHttpRequests(authz -> authz
-	            		.requestMatchers("/").permitAll()
+	            		.requestMatchers("/","/logout-me-out").permitAll()
 	            		.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 	                .anyRequest().authenticated())
 	            .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));

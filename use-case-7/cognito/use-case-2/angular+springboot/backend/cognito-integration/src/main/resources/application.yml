@@ -4,9 +4,10 @@ cognito: {
      callbackUri: http://localhost:8080/auth/callback,
      userPoolId: us-east-1_CCHScpCEi, 
      region: us-east-1,
-     redirectUrl: http://localhost:4200,
+     redirectUrl: http://localhost:4200/,
      logoutUrl: https://us-east-1cchscpcei.auth.us-east-1.amazoncognito.com/logout,
-     logoutRedirectUrl: http://localhost:4200/logout}
+     logoutRedirectUrl: http://localhost:4200/logout
+     }
      
 spring: 
    application:

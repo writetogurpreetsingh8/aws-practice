@@ -96,7 +96,7 @@ public class CognitoAuthorizationFilter extends OncePerRequestFilter {
 	
 	//1) When the browser hits http://localhost:8080 → redirect to Hosted UI
 	private void redirectToCognitoHostedUI(HttpServletResponse response) throws IOException {
-		String scope = "email openid phone";
+		String scope = "email openid phone aws.cognito.signin.user.admin";
     	String encodedScope = URLEncoder.encode(scope, StandardCharsets.UTF_8); // still gives `+`
     	
     	String codeVerifier = PKCEUtil.generateCodeVerifier();

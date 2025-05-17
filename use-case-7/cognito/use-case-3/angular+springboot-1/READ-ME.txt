@@ -14,5 +14,17 @@ D) Upon successful login, the frontend receives id_token, access_token, and refr
 E) The backend is configured as an oauth2ResourceServer, which automatically extracts and validates the Bearer token to authenticate the user.
 F) If the access_token expires, the backend responds with a 401 Unauthorized error. The frontend intercepts this, triggers a refresh by calling the /oauth2/token endpoint, obtains a new access_token and retries the original request.
 
+
+
+In order to logout we also need to invoke either /revoke endpoint of cognito or 
+use Cognito SDK GlobalSignoutReqeuest or AdminGlobalSignoutReqeuest
+
+
+if user itself logout than we should use SDK GlobalSignoutReqeuest or if there is Admin intervention to make 
+user forcefully logout than we should use AdminGlobalSignoutReqeuest only
+if we use GlobalSignoutReqeuest we must use this scope("aws.cognito.signin.user.admin") while asking tokens from Cognito
+and we also need to set this scope in the Cognito UI console Under "OpenID Connect scopes" section 
+
+
 For further details, refer to the project code & flow image.
 
